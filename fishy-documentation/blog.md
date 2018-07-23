@@ -346,35 +346,35 @@ the past](https://cdn-images-1.medium.com/max/800/1*b-EBtFXJEbUO_LmW9A4d5A.png)
 For the rest of the markdown I'm going to just list them out with a
 quick explanation. More like a cheatsheet.
 
--   [*Emphasis* is rendered by surrounding text
+-   *Emphasis* is rendered by surrounding text
     like`/this is serious guys!/`. Other
-    mark up is valid in emphasis quotes.]
--   [**Bold** is rendered by surrounding text like
+    mark up is valid in emphasis quotes.
+-   **Bold** is rendered by surrounding text like
     `__that's a bold move__`. Again,
-    other mark up is valid inside quotes.]
--   [Monospaced text is rendered by surrounding text like
-    `@Ok Computer@`.]
--   [Itemized lists are done by using `*` or `-`. We can
+    other mark up is valid inside quotes.
+-   Monospaced text is rendered by surrounding text like
+    `@Ok Computer@`.
+-   Itemized lists are done by using `*` or `-`. We can
     nest paragraphs in lists and the rule for doing a sublist is a
-    newline and 4 space indentation.]
--   [Enumerated lists are by using `(n)`
-    or `n.`.]
--   [Definition lists are done by doing the
-    following`[@foo@]: The description of foo.`.]
--   [We can link URLs by using angle brackets
-    `<http://mycoolwebsite.io>`.]
--   [Hyperlink text by doing
-    `[check out my cool website!](http://mycoolwebsite.io)`.]
--   [You can embed images
-    using `![my dope image description](mydopeimage.png)`.]
--   [LaTeX can rendered using `\[...\]`
-    for displayed mathematics and `\(...\)` for in-line mathematics.]
--   [Headings are conjured using `=`,
+    newline and 4 space indentation.
+-   Enumerated lists are by using `(n)`
+    or `n.`.
+-   Definition lists are done by doing the
+    following`@foo@: The description of foo.`.
+-   We can link URLs by using angle brackets
+    `<http://mycoolwebsite.io>`.
+-   Hyperlink text by doing
+    `[check out my cool website!](http://mycoolwebsite.io)`.
+-   You can embed images
+    using `![my dope image description](mydopeimage.png)`.
+-   LaTeX can rendered using `\[...\]`
+    for displayed mathematics and `\(...\)` for in-line mathematics.
+-   Headings are conjured using `=`,
     for example `= My Heading Level 1`
     and `== My sub heading at level 2`.
-    These go up to 6 levels of headings.]
--   [And the very useful `@since` to
-    mark which version a function was introduced.]
+    These go up to 6 levels of headings.
+-   And the very useful `@since` to
+    mark which version a function was introduced.
 
 This is where I'll leave you. You're now dangerous enough to write
 documentation for your code and have it rendered to HTML. There is more
