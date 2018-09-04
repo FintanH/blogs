@@ -367,7 +367,7 @@ dhall <<< "let E = constructors (./Either/Type Text Natural) in E.Left \"Hello\"
 < Left = "Hello" | Right : Natural >
 ```
 
-### Just the Starters
+## Just the Starters
 
 We have taken a whirlwind tour of Dhall and filled ourselves with some starters. Going through
 the types that Dhall supports, defining and creating records and unions, and defining our good
