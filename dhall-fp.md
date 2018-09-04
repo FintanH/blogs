@@ -26,14 +26,21 @@ The native types to Dhall can be enumerated:
 * Optional
 * Unit
 
+## Basic Types
+
 So let's take a look at them via the `dhall` command. Running the following we can see what we
 can do with Dhall.
+
+### Booleans
+
 ```bash
 $ dhall <<< "True && False"
 Bool
 
 False
 ```
+
+### Naturals
 
 ```bash
 $ dhall <<< "1"
@@ -48,6 +55,8 @@ Natural
 
 2
 ```
+
+### Integers and Doubles
 
 ```bash
 $ dhall <<< "-1"
@@ -65,12 +74,16 @@ Double
 Note:
 > There are no built-in operations on `Integer`s or `Double`s. For all practical purposes they are opaque values within the Dhall language
 
+### Text
+
 ```bash
 $ dhall <<< "\"Hello\" ++ \" World\""
 Text
 
 "Hello World"
 ```
+
+### Lists
 
 ```bash
 $ dhall <<< "[1, 2, 3] # [4, 5, 6]"
@@ -93,6 +106,8 @@ Natural
 3
 ```
 
+### Optionals
+
 ```bash
 $ dhall <<< "Optional/fold Text ([\"ABC\"] : Optional Text) Text (λ(t : Text) → t) \"\""
 Text
@@ -107,6 +122,8 @@ Text
 ""
 ```
 
+### Unit
+
 ```bash
 $ dhall <<< "{=}"
 {}
@@ -114,6 +131,9 @@ $ dhall <<< "{=}"
 {=}
 ```
 The Unit type looks like an empty record, which segues us onto our next topic!
+
+
+## Records
 
 On top of all these types we can make records that have named fields.
 For example let's define a user
@@ -168,6 +188,9 @@ $ dhall <<< "{ name = \"Fintan\", age = 25 }.{ age, name }"
 
 { age = 25, name = "Fintan" }
 ```
+
+
+## Unions
 
 As well as records we can define union types. For example we can enumerate the days of the week.
 ```bash
