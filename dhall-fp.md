@@ -353,6 +353,7 @@ run `dhall format --inplace ./Either/type`, it will convert all the symbols for 
 
 Let's see our `Either` in action! Assuming you're following along and have defined the above in
 `Either/type` we can try the following:
+
 ```bash
 $ dhall <<< "let E = constructors (./Either/Type Text Natural) in E.Right 2"
 < Left : Text | Right : Natural >
@@ -365,6 +366,18 @@ dhall <<< "let E = constructors (./Either/Type Text Natural) in E.Left \"Hello\"
 < Left : Text | Right : Natural >
 
 < Left = "Hello" | Right : Natural >
+```
+
+```bash
+    let Either = ./Either/Type Text Natural
+
+in  let E = constructors Either
+
+in  let f =
+            λ(e : Either)
+          → merge { Right = λ(i : Natural) → i + 2, Left = λ(t : Text) → 42 } e
+
+in  f (E.Right 42)
 ```
 
 ## Just the Starters
