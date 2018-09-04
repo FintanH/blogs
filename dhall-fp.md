@@ -40,6 +40,13 @@ Bool
 False
 ```
 
+```bash
+$ dhall <<< "True || False"
+Bool
+
+True
+```
+
 ### Naturals
 
 ```bash
@@ -66,15 +73,45 @@ Integer
 ```
 
 ```bash
+$ dhall <<< "+1"
+Integer
+
++1
+```
+
+```bash
+$ dhall <<< "+0"
+Integer
+
++0
+```
+
+```bash
+$ dhall <<< "-0"
+Integer
+
++0
+```
+
+```bash
 $ dhall <<< "3.14"
 Double
 
 3.14
 ```
+
 Note:
-> There are no built-in operations on `Integer`s or `Double`s. For all practical purposes they are opaque values within the Dhall language
+> There are no built-in operations on `Integer`s or `Double`s.
+For all practical purposes they are opaque values within the Dhall language
 
 ### Text
+
+```bash
+$ dhall <<< "\"Fintan <3 Dhall\""
+Text
+
+"Fintan <3 Dhall"
+```
 
 ```bash
 $ dhall <<< "\"Hello\" ++ \" World\""
@@ -130,23 +167,28 @@ $ dhall <<< "{=}"
 
 {=}
 ```
-The Unit type looks like an empty record, which segues us onto our next topic!
+The Unit type looks like an empty record, which segues us onto our next topic nicely!
 
 
 ## Records
 
 On top of all these types we can make records that have named fields.
-For example let's define a user
-with a name, age, and email.
+For example let's define a user with a name, age, and email.
+
+### Defining Records Types and Values
+
 ```bash
 $ dhall <<< "{ name : Text, age : Natural, email : Text }"
 Type
 
 { name : Text, age : Natural, email : Text }
 ```
-Notice that we didn't have to bind the record type to some name such as `User`.
-If we wanted to ensure that we were defining the correct fields we can bind the type
-and then assert that the value is of the correct type.
+Notice that we didn't have to bind the record type to a name such as `User`. Due to the nature
+of working with directories and files, our file path _will be our name_.
+
+For these small examples, we will use `let` and `in` to bind the type and assert that the
+value we are constructing is the correct type.
+
 ```bash
 $ dhall <<< "let User = { name : Text, age : Natural, email : Text } in { name = \"Fintan\", age = 25, email = \"fintan dot halpenny at gmail dot com\" } : User"
 { name : Text, age : Natural, email : Text }
@@ -156,6 +198,7 @@ $ dhall <<< "let User = { name : Text, age : Natural, email : Text } in { name =
 
 Just to prove to ourselves that Dhall is type checking correctly, let's leave off the email
 value and see what happens.
+
 ```bash
 $ dhall <<< "let User = { name : Text, age : Natural, email : Text } in { name = \"Fintan\", age = 25 } : User"
 
@@ -173,6 +216,8 @@ Error: Expression doesn't match annotation
 
 (stdin):1:60
 ```
+
+### Accessing Record Values
 
 We can access one or more record fields use the `.` accessor.
 ```bash
@@ -193,6 +238,9 @@ $ dhall <<< "{ name = \"Fintan\", age = 25 }.{ age, name }"
 ## Unions
 
 As well as records we can define union types. For example we can enumerate the days of the week.
+
+### Defining Union Types and Construcing Values
+
 ```bash
 $ dhall <<< "
 < Monday : {}
@@ -231,6 +279,8 @@ in  DaysConstructors.Monday {=}
 
 < Monday = {=} | Tuesday : {} | Wednesday : {} | Thurday : {} | Friday : {} >
 ```
+
+### Consuming Unions
 
 When we want to collapse union data we use the `merge` keyword:
 ```bash
@@ -315,3 +365,12 @@ dhall <<< "let E = constructors (./Either/Type Text Natural) in E.Left \"Hello\"
 < Left : Text | Right : Natural >
 
 < Left = "Hello" | Right : Natural >
+```
+
+### Just the Starters
+
+We have taken a whirlwind tour of Dhall and filled ourselves with some starters. Going through
+the types that Dhall supports, defining and creating records and unions, and defining our good
+ol' friend `Either`.
+I'm not sure about you but I'm still hungry, so tune in next time for exploring some more Dhall
+visiting our familiar friend Functor, and its lesser known yokefellow Yoneda.
