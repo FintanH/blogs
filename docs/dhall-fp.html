@@ -1,0 +1,231 @@
+<h1 id="bowl-full-of-lentils">Bowl Full of Lentils</h1>
+<p>In this blog post I’m going to take a break from Haskell and spread the good word of <a href="https://github.com/dhall-lang/dhall-lang/">Dhall</a>. The good news is that it won’t be a break from functional programming. We still have all the good stuff in Dhall like: lambdas, products, sums and types! We’ll take a look through some of the basics of Dhall and work our way up to defining <code>Either</code>. This will be a two part series and in the second part we’ll take the definition of <code>Either</code> and work with it to see some more functional concepts in Dhall.</p>
+<h2 id="introduction-to-dhall">Introduction to Dhall</h2>
+<p>One can almost view Dhall as JSON with functions and types, but really it’s so much better. There is an excellent <a href="https://hackage.haskell.org/package/dhall-1.16.1/docs/Dhall-Tutorial.html">tutorial</a> that lives in the library. It goes through the simple usage of Dhall and how you can utilise Dhall files in your Haskell code. I will try summarise here the main points to give you a taste. To <em>really</em> get a feel we can grab the Dhall executable. An easy way to get it is if you have <a href="https://docs.haskellstack.org/en/stable/README/#how-to-install"><code>stack</code></a>, we can run <code>stack install dhall --resolver=lts-12.0</code>; grabbing the <code>dhall</code> package (version 1.16.1) at LTS-12.0.</p>
+<p>The native types to Dhall can be enumerated: * Bool * Natural * Integer * Double * Text * List * Optional * Unit</p>
+<h2 id="basic-types">Basic Types</h2>
+<p>So let’s take a look at them via the <code>dhall</code> command. Running the following we can see what we can do with Dhall.</p>
+<h3 id="booleans">Booleans</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;True &amp;&amp; False&quot;</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">Bool</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="ex">False</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;True || False&quot;</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">Bool</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="ex">True</span></a></code></pre></div>
+<h3 id="naturals">Naturals</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;1&quot;</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ex">Natural</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="ex">1</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;1 + 1&quot;</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="ex">Natural</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="ex">2</span></a></code></pre></div>
+<h3 id="integers-and-doubles">Integers and Doubles</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;-1&quot;</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="ex">Integer</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="ex">-1</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;+1&quot;</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="ex">Integer</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="ex">+1</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;+0&quot;</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="ex">Integer</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="ex">+0</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;-0&quot;</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ex">Integer</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="ex">+0</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;3.14&quot;</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="ex">Double</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="ex">3.14</span></a></code></pre></div>
+<p>Note: &gt; There are no built-in operations on <code>Integer</code>s or <code>Double</code>s. For all practical purposes they are opaque values within the Dhall language</p>
+<h3 id="text">Text</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;</span><span class="dt">\&quot;</span><span class="st">Fintan &lt;3 Dhall</span><span class="dt">\&quot;</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="ex">Text</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">&quot;Fintan &lt;3 Dhall&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;</span><span class="dt">\&quot;</span><span class="st">Hello</span><span class="dt">\&quot;</span><span class="st"> ++ </span><span class="dt">\&quot;</span><span class="st"> World</span><span class="dt">\&quot;</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ex">Text</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="st">&quot;Hello World&quot;</span></a></code></pre></div>
+<h3 id="lists">Lists</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;[1, 2, 3] # [4, 5, 6]&quot;</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="ex">List</span> Natural</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="bu">[</span> 1, 2, 3, 4, 5, 6<span class="bu"> ]</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb13-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;List/fold Bool [True, False, True] Bool (λ(x : Bool) → λ(y : Bool) → x &amp;&amp; y) True&quot;</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="ex">Bool</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="ex">False</span></a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;List/length Natural [1, 2, 3]&quot;</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="ex">Natural</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="ex">3</span></a></code></pre></div>
+<h3 id="optionals">Optionals</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;Optional/fold Text ([</span><span class="dt">\&quot;</span><span class="st">ABC</span><span class="dt">\&quot;</span><span class="st">] : Optional Text) Text (λ(t : Text) → t) </span><span class="dt">\&quot;\&quot;</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="ex">Text</span></a>
+<a class="sourceLine" id="cb15-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="st">&quot;ABC&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb16-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;Optional/fold Text ([] : Optional Text) Text (λ(t : Text) → t) </span><span class="dt">\&quot;\&quot;</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="ex">Text</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">&quot;&quot;</span></a></code></pre></div>
+<h3 id="unit">Unit</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb17-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;{=}&quot;</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="dt">{}</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="dt">{=}</span></a></code></pre></div>
+<p>The Unit type looks like an empty record, which segues us onto our next topic nicely!</p>
+<h2 id="records">Records</h2>
+<p>On top of all these types we can make records that have named fields. For example let’s define a user with a name, age, and email.</p>
+<h3 id="defining-records-types-and-values">Defining Records Types and Values</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb18-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;{ name : Text, age : Natural, email : Text }&quot;</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="ex">Type</span></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="kw">{</span> <span class="ex">name</span> : Text, age : Natural, email : Text <span class="kw">}</span></a></code></pre></div>
+<p>Notice that we didn’t have to bind the record type to a name such as <code>User</code>. Due to the nature of working with directories and files, our file path <em>will be our name</em>.</p>
+<p>For these small examples, we will use <code>let</code> and <code>in</code> to bind the type and assert that the value we are constructing is the correct type.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb19-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;let User = { name : Text, age : Natural, email : Text } in { name = </span><span class="dt">\&quot;</span><span class="st">Fintan</span><span class="dt">\&quot;</span><span class="st">, age = 25, email = </span><span class="dt">\&quot;</span><span class="st">fintan dot halpenny at gmail dot com</span><span class="dt">\&quot;</span><span class="st"> } : User&quot;</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="kw">{</span> <span class="ex">name</span> : Text, age : Natural, email : Text <span class="kw">}</span></a>
+<a class="sourceLine" id="cb19-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="kw">{</span> <span class="ex">name</span> = <span class="st">&quot;Fintan&quot;</span>, age = 25, email = <span class="st">&quot;fintan dot halpenny at gmail dot com&quot;</span> <span class="kw">}</span></a></code></pre></div>
+<p>Just to prove to ourselves that Dhall is type checking correctly, let’s leave off the email value and see what happens.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb20-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;let User = { name : Text, age : Natural, email : Text } in { name = </span><span class="dt">\&quot;</span><span class="st">Fintan</span><span class="dt">\&quot;</span><span class="st">, age = 25 } : User&quot;</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="ex">Use</span> <span class="st">&quot;dhall --explain&quot;</span> for detailed errors</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb20-5" data-line-number="5"><span class="ex">Error</span>: Expression doesn<span class="st">&#39;t match annotation</span></a>
+<a class="sourceLine" id="cb20-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb20-7" data-line-number="7"><span class="st">{ - email : …</span></a>
+<a class="sourceLine" id="cb20-8" data-line-number="8"><span class="st">, …</span></a>
+<a class="sourceLine" id="cb20-9" data-line-number="9"><span class="st">}</span></a>
+<a class="sourceLine" id="cb20-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb20-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb20-12" data-line-number="12"><span class="st">{ name = &quot;Fintan&quot;, age = 25 } : User</span></a>
+<a class="sourceLine" id="cb20-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb20-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb20-15" data-line-number="15"><span class="st">(stdin):1:60</span></a></code></pre></div>
+<h3 id="accessing-record-values">Accessing Record Values</h3>
+<p>We can access one or more record fields use the <code>.</code> accessor.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb21-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;{ name = </span><span class="dt">\&quot;</span><span class="st">Fintan</span><span class="dt">\&quot;</span><span class="st">, age = 25 }.age&quot;</span></a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="ex">Natural</span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="ex">25</span></a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb22-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;{ name = </span><span class="dt">\&quot;</span><span class="st">Fintan</span><span class="dt">\&quot;</span><span class="st">, age = 25 }.{ age, name }&quot;</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">{</span> <span class="ex">age</span> : Natural, name : Text <span class="kw">}</span></a>
+<a class="sourceLine" id="cb22-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="kw">{</span> <span class="ex">age</span> = 25, name = <span class="st">&quot;Fintan&quot;</span> <span class="kw">}</span></a></code></pre></div>
+<h2 id="unions">Unions</h2>
+<p>As well as records we can define union types. For example we can enumerate the days of the week.</p>
+<h3 id="defining-union-types-and-construcing-values">Defining Union Types and Construcing Values</h3>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb23-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="st">&lt; Monday : {}</span></a>
+<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="st">| Tuesday : {}</span></a>
+<a class="sourceLine" id="cb23-4" data-line-number="4"><span class="st">| Wednesday : {}</span></a>
+<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="st">| Thursday : {}</span></a>
+<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="st">| Friday : {}</span></a>
+<a class="sourceLine" id="cb23-7" data-line-number="7"><span class="st">&gt;</span></a>
+<a class="sourceLine" id="cb23-8" data-line-number="8"><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb23-9" data-line-number="9"><span class="ex">Type</span></a>
+<a class="sourceLine" id="cb23-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb23-11" data-line-number="11"><span class="op">&lt;</span> <span class="ex">Monday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Tuesday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Wednesday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Thursday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Friday</span> : <span class="dt">{}</span> <span class="op">&gt;</span></a></code></pre></div>
+<p>And construct values of union types using the <code>constructors</code> keyword:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb24-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="st">    let Days =</span></a>
+<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="st">          &lt; Monday :</span></a>
+<a class="sourceLine" id="cb24-4" data-line-number="4"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb24-5" data-line-number="5"><span class="st">          | Tuesday :</span></a>
+<a class="sourceLine" id="cb24-6" data-line-number="6"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb24-7" data-line-number="7"><span class="st">          | Wednesday :</span></a>
+<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb24-9" data-line-number="9"><span class="st">          | Thurday :</span></a>
+<a class="sourceLine" id="cb24-10" data-line-number="10"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb24-11" data-line-number="11"><span class="st">          | Friday :</span></a>
+<a class="sourceLine" id="cb24-12" data-line-number="12"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb24-13" data-line-number="13"><span class="st">          &gt;</span></a>
+<a class="sourceLine" id="cb24-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb24-15" data-line-number="15"><span class="st">in  let DaysConstructors = constructors Days</span></a>
+<a class="sourceLine" id="cb24-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb24-17" data-line-number="17"><span class="st">in  DaysConstructors.Monday {=}</span></a>
+<a class="sourceLine" id="cb24-18" data-line-number="18"><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb24-19" data-line-number="19"><span class="op">&lt;</span> <span class="ex">Monday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Tuesday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Wednesday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Thurday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Friday</span> : <span class="dt">{}</span> <span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb24-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb24-21" data-line-number="21"><span class="op">&lt;</span> <span class="ex">Monday</span> = <span class="dt">{=}</span> <span class="kw">|</span> <span class="ex">Tuesday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Wednesday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Thurday</span> : <span class="dt">{}</span> <span class="kw">|</span> <span class="ex">Friday</span> : <span class="dt">{}</span> <span class="op">&gt;</span></a></code></pre></div>
+<h3 id="consuming-unions">Consuming Unions</h3>
+<p>When we want to collapse union data we use the <code>merge</code> keyword:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb25-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="st">    let Days =</span></a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="st">          &lt; Monday :</span></a>
+<a class="sourceLine" id="cb25-4" data-line-number="4"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb25-5" data-line-number="5"><span class="st">          | Tuesday :</span></a>
+<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="st">          | Wednesday :</span></a>
+<a class="sourceLine" id="cb25-8" data-line-number="8"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb25-9" data-line-number="9"><span class="st">          | Thurday :</span></a>
+<a class="sourceLine" id="cb25-10" data-line-number="10"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb25-11" data-line-number="11"><span class="st">          | Friday :</span></a>
+<a class="sourceLine" id="cb25-12" data-line-number="12"><span class="st">              {}</span></a>
+<a class="sourceLine" id="cb25-13" data-line-number="13"><span class="st">          &gt;</span></a>
+<a class="sourceLine" id="cb25-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb25-15" data-line-number="15"><span class="st">in  let DaysConstructors = constructors Days</span></a>
+<a class="sourceLine" id="cb25-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb25-17" data-line-number="17"><span class="st">in  let doesGarfieldHate =</span></a>
+<a class="sourceLine" id="cb25-18" data-line-number="18"><span class="st">            λ(day : Days)</span></a>
+<a class="sourceLine" id="cb25-19" data-line-number="19"><span class="st">          → merge</span></a>
+<a class="sourceLine" id="cb25-20" data-line-number="20"><span class="st">            { Monday =</span></a>
+<a class="sourceLine" id="cb25-21" data-line-number="21"><span class="st">                λ(_ : {}) → True</span></a>
+<a class="sourceLine" id="cb25-22" data-line-number="22"><span class="st">            , Tuesday =</span></a>
+<a class="sourceLine" id="cb25-23" data-line-number="23"><span class="st">                λ(_ : {}) → False</span></a>
+<a class="sourceLine" id="cb25-24" data-line-number="24"><span class="st">            , Wednesday =</span></a>
+<a class="sourceLine" id="cb25-25" data-line-number="25"><span class="st">                λ(_ : {}) → False</span></a>
+<a class="sourceLine" id="cb25-26" data-line-number="26"><span class="st">            , Thurday =</span></a>
+<a class="sourceLine" id="cb25-27" data-line-number="27"><span class="st">                λ(_ : {}) → False</span></a>
+<a class="sourceLine" id="cb25-28" data-line-number="28"><span class="st">            , Friday =</span></a>
+<a class="sourceLine" id="cb25-29" data-line-number="29"><span class="st">                λ(_ : {}) → False</span></a>
+<a class="sourceLine" id="cb25-30" data-line-number="30"><span class="st">            }</span></a>
+<a class="sourceLine" id="cb25-31" data-line-number="31"><span class="st">            day</span></a>
+<a class="sourceLine" id="cb25-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb25-33" data-line-number="33"><span class="st">in        if doesGarfieldHate (DaysConstructors.Monday {=})</span></a>
+<a class="sourceLine" id="cb25-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb25-35" data-line-number="35"><span class="st">    then  </span><span class="dt">\&quot;</span><span class="st">Garfield hates Mondays...</span><span class="dt">\&quot;</span></a>
+<a class="sourceLine" id="cb25-36" data-line-number="36"></a>
+<a class="sourceLine" id="cb25-37" data-line-number="37"><span class="st">    else  </span><span class="dt">\&quot;</span><span class="st">Garfield is happy today!</span><span class="dt">\&quot;</span></a>
+<a class="sourceLine" id="cb25-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb25-39" data-line-number="39"><span class="st">Text</span></a>
+<a class="sourceLine" id="cb25-40" data-line-number="40"></a>
+<a class="sourceLine" id="cb25-41" data-line-number="41"><span class="st">&quot;</span>Garfield hates Mondays...<span class="st">&quot;</span></a></code></pre></div>
+<h2 id="either">Either</h2>
+<p>Ok, so that was a whirlwind tour of Dhall and I’m sure we missed some things along the way but it should be enough to get us writing a self defined <code>Either</code> data type. If we were to go off of the knowledge we covered above, our first attempt at <code>Either</code> would be:</p>
+<pre><code>&lt; Left : a | Right : b &gt;</code></pre>
+<p>That is to say, we have a <code>Left</code> union entry of type <code>a</code>, and a <code>Right</code> union entry of type <code>b</code>. The question is, where do <code>a</code> and <code>b</code> come from? Well, this is where type functions come in. In Dhall, types are passed along to say what types of things we are working with. Let’s see this in action with the full definition of <code>Either</code>:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb27-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;\(a : Type) -&gt; \(b : Type) -&gt; &lt; Left : a | Right : b &gt;&quot;</span></a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">∀<span class="kw">(</span><span class="ex">a</span> : Type<span class="kw">)</span> → ∀<span class="kw">(</span><span class="ex">b</span> : Type<span class="kw">)</span> → <span class="ex">Type</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">λ<span class="kw">(</span><span class="ex">a</span> : Type<span class="kw">)</span> → λ<span class="kw">(</span><span class="ex">b</span> : Type<span class="kw">)</span> → <span class="op">&lt;</span> <span class="ex">Left</span> : a <span class="kw">|</span> <span class="ex">Right</span> : b <span class="op">&gt;</span></a></code></pre></div>
+<p>Notice how the output uses <code>∀</code>, <code>λ</code>, and <code>→</code>. We can format our files to use these symbols, and I strongly recommend you do so. If we put the above definition in a file <code>Either/type</code> and run <code>dhall format --inplace ./Either/type</code>, it will convert all the symbols for us. So pretty 😍.</p>
+<p>Let’s see our <code>Either</code> in action! Assuming you’re following along and have defined the above in <code>Either/type</code> we can try the following:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb28-1" data-line-number="1">$ <span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;let E = constructors (./Either/Type Text Natural) in E.Right 2&quot;</span></a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="op">&lt;</span> <span class="ex">Left</span> : Text <span class="kw">|</span> <span class="ex">Right</span> : Natural <span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb28-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="op">&lt;</span> <span class="ex">Right</span> = 2 <span class="kw">|</span> <span class="ex">Left</span> : Text <span class="op">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="ex">dhall</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">&quot;let E = constructors (./Either/Type Text Natural) in E.Left </span><span class="dt">\&quot;</span><span class="st">Hello</span><span class="dt">\&quot;</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="op">&lt;</span> <span class="ex">Left</span> : Text <span class="kw">|</span> <span class="ex">Right</span> : Natural <span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4"><span class="op">&lt;</span> <span class="ex">Left</span> = <span class="st">&quot;Hello&quot;</span> <span class="kw">|</span> <span class="ex">Right</span> : Natural <span class="op">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb30-1" data-line-number="1">    <span class="bu">let</span> Either = ./Either/Type Text Natural</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="kw">in</span>  <span class="bu">let</span> E = constructors Either</a>
+<a class="sourceLine" id="cb30-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb30-5" data-line-number="5"><span class="kw">in</span>  <span class="bu">let</span> f =</a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">            λ<span class="kw">(</span><span class="ex">e</span> : Either<span class="kw">)</span></a>
+<a class="sourceLine" id="cb30-7" data-line-number="7">          → <span class="ex">merge</span> { Right = λ(i : Natural) → <span class="ex">i</span> + 2, Left = λ(t : Text) → <span class="ex">42</span> } <span class="ex">e</span></a>
+<a class="sourceLine" id="cb30-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb30-9" data-line-number="9"><span class="kw">in</span>  <span class="ex">f</span> (E.Right 42)</a></code></pre></div>
+<h2 id="just-the-starters">Just the Starters</h2>
+<p>We have taken a whirlwind tour of Dhall and filled ourselves with some starters. Going through the types that Dhall supports, defining and creating records and unions, and defining our good ol’ friend <code>Either</code>. I’m not sure about you but I’m still hungry, so tune in next time for exploring some more Dhall visiting our familiar friend Functor, and its lesser known yokefellow Yoneda.</p>
