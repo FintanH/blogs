@@ -2,7 +2,7 @@
 
 ## A Tale of Normalisation
 
-In the last post we left off having gone through the basics of
+In the [last post](https://functional.works-hub.com/learn/bowl-full-of-lentils-fcbf3) we left off having gone through the basics of
 [Dhall](https://github.com/dhall-lang/dhall-lang) and defining an `Either` type.
 For this post the aim of the game is to look into defining `Functor`s in Dhall and then seeing how `Yoneda`
 relates to `Functor`s and why it helps us in Dhall. Without further ado, let's
@@ -12,12 +12,13 @@ get stuck in with `Functor`!
 
 To begin, let's deconstruct what we know about `Functor` (in most programming languages)
 and build up the definition from there. The first thing we know about `Functor`
-is that has a kind that is `Type → Type`.
+is that it abstacts over some `f` that has a kind `Type → Type`.
 
 The other thing we know about `Functor` is that it defines a higher-order function called `map`.
-This higher order function takes `(a → b)` and gives us back a function `f a → f b`.
+This higher order function takes an `(a → b)` and gives us back a function `f a → f b`.
 
-To define this in Dhall we define it is a type record. So let's see that looks like:
+To define this in Dhall we define it is a record type with a field called `map`.
+So let's see what that looks like:
 
 ```
   λ(f : Type → Type)
@@ -28,9 +29,9 @@ Breaking this down we can see:
 
 * An `f` that is of type `Type → Type`, corresponding to our required kind.
 * A record containing a field `map` which defines the higher-order function.
-* The higher-order function forall `a`, and forall `b` the required function `(a → b) → f a → f b`.
+* The higher-order function for all `a`, and for all `b`, and the required function `(a → b) → f a → f b`.
 
-Placing this in a function `Functor/Type` and running it through Dhall we get:
+Placing this in a file `Functor/Type` and running it through Dhall we get:
 ```
 $ dhall <<< "./Functor/Type"
 ∀(f : Type → Type) → Type
@@ -44,6 +45,13 @@ Some things to note are that you will need to import the `Either` type that
 was defined in the last post (or write it inline), and the `Functor/Type` we
 have just defined to add a type annotation so that we make sure we aren't lying
 about the implementation.
+
+
+
+
+
+
+
 
 
 
@@ -75,49 +83,42 @@ in    λ(a : Type)
 
 Since `Either` has a kind `Type → Type → Type` we have to introduce what the `a` for the `Left`
 part of the union type. Then we introduce the types we will be transforming in our `map`
-function and the `either` that we will be mapping over. We will need to construct new
-values of type `Either a c`, and finally collapse the `either` we were given and reconstruct
+function (`b` and `c` in this case) and the `either` that we will be mapping over. We will need to construct new
+values of type `Either a c`, handling each case of the union. Finally we collapse the `either` we were given and reconstruct
 a new one with function `f` applied to the `Right` side.
 
 ## Traffic Problem with `merge`
 
-This is where we're going to see that we run into a bit of bloat with Dhall.
-Let's look at what happens when map multiple functions one after the other to some `Either` type.
+This is where we're going to see that we run into a bit of code bloat with Dhall.
+Let's look at what happens when we `map` multiple functions one after the other over some `Either` value.
 
 ```
     let Either = ./Either/Type Text Natural
 
 in  let map = (./Either/Functor Text).map
 
-in  let pOne = λ(i : Natural) → i + 1
-
-in  let pTwo = λ(i : Natural) → i + 2
-
-in  let pThree = λ(i : Natural) → i + 3
-
-in  let pFour = λ(i : Natural) → i + 4
-
-in  let pFive = λ(i : Natural) → i + 5
-
-in  let foo =
-            λ(e : Either)
-          → map
+in    λ(e : Either)
+    → map
+      Natural
+      Natural
+      (λ(i : Natural) → i + 5)
+      ( map
+        Natural
+        Natural
+        (λ(i : Natural) → i + 4)
+        ( map
+          Natural
+          Natural
+          (λ(i : Natural) → i + 3)
+          ( map
             Natural
             Natural
-            pFive
-            ( map
-              Natural
-              Natural
-              pFour
-              ( map
-                Natural
-                Natural
-                pThree
-                (map Natural Natural pTwo (map Natural Natural pOne e))
-              )
-            )
+            (λ(i : Natural) → i + 2)
+            (map Natural Natural (λ(i : Natural) → i + 1) e)
+          )
+        )
+      )
 
-in  foo
 ```
 
 Not the prettiest code ever but it will be demostrative of the point so let's
@@ -167,19 +168,21 @@ $ dhall <<< "./lots-o-map"
   )
 ```
 
-That's a lot of nested merges! And if output it into a file by doing
+That's a lot of nested merges! And if we output it into a file by doing
 `dhall <<< "./lot-o-map" > output` we can inspect the size of it and we can see it's 941B.
-Woof! 🐶
+In more complicated use cases where you are using `map` repeatedly your expressions can
+become GBs; Woof! 🐶
 
-Sure this seems like a trivial case but it can occur (and did) in more complex code. While
+Sure this seems like a trivial case but it can occur (and did in our [Formation](https://formation.ai/) code base) in more complex code. While
 using Dhall at work we had a `traverse` that contained multiple uses of `map` inside the
-body. This meant there was a lot of `map`s accumulating. So what can we do about it?!
+body, that traversed a large AST of nested unions. This meant there was a lot of `map`s accumulating.
+We had an output of 300MB, which was slowing down the Haskell code that was trying to read this in. So what can we do about it?!
 
 ## Yo, Yoneda!
 
-Enter `Yoneda`! I first heard about this through my good friend at
+Enter `Yoneda`! I first heard about this through my good friend
 [reasonablypolymorphic](http://reasonablypolymorphic.com/). Sandy was talking about `Yoneda` and how it can help
-Haskell generics code for more efficient implementations. It's use doesn't stop there though,
+Haskell generics code for more efficient implementations. Its use doesn't stop there though,
 but first let's take a look at what it is.
 
 We can define `Yoneda` in Dhall like so:
@@ -190,8 +193,8 @@ We can define `Yoneda` in Dhall like so:
 We will make this easier to digest by looking at each part individually. The first thing
 we have is an `f` that is of kind `Type → Type`. We then have an `a` of kind `Type`.
 
-When these are applied we get back a type that is forall `b` a higher-order function
-`(a → b) → f b`. This description should start to sound _very_ familiar.
+When these are applied we get back a higher-order function
+`(a → b) → f b` for all `b`. This description should start to sound _very_ familiar.
 
 `Yoneda` is known as the "Free Functor" because we can define a `Functor` `map` operation
 on it for _anything_ that is of kind `Type → Type`!
@@ -261,7 +264,7 @@ On top of this function composition is associative:
 
 But of course we aren't always working in terms of `Yoneda`. We need different semantics for
 different scenarios. Such as error handling with `Either`. So for this we have two functions
-in the `Yoned` tool box to help us: `lift` and `lower`.
+in the `Yoneda` tool box to help us: `lift` and `lower`.
 
 `lift` will _lift_ your `f` into `Yoneda` and we define it in Dhall as:
 
@@ -290,12 +293,19 @@ Converseley, `lower` _lowers_ the `Yoneda` to our `f`. Defined in Dhall as:
 → yoneda a (λ(x : a) → x)
 ```
 
-It simply uses the identity function as the function that `Yoneda` is waiting for to
-kick off computations.
+It uses the identity function, `λ(x : a) → x)`, and to understand why we can once again
+turn to one of the `Functor` laws that states:
+
+```
+map id === id
+```
+
+So identity acts as the "default" argument that acts as a no-op and gives us back our `f`
+structure.
 
 ## Slim Fast
 
-We've jumped through all these hoops, defined `Yoneda`, and now what? Well let's see what
+We've jumped through all these hoops: defined `Yoneda`, `lift`, and `lower`, and now what? Well let's see what
 happens when we change the earlier example to use `Yoneda`.
 
 We first `lift` our `Either` data into `Yoneda`, apply the series of `map`s,
@@ -306,51 +316,36 @@ and finally `lower` the `Yoneda` back to `Either` so the interface of the functi
 
 in  let Either = EitherText Natural
 
-in  let YonedaE = ./Yoneda/Type EitherText
-
 in  let lift = ./Yoneda/lift EitherText (./Either/Functor Text)
 
 in  let lower = ./Yoneda/lower EitherText
 
 in  let map = (./Yoneda/Functor EitherText).map
 
-in  let pOne = λ(i : Natural) → i + 1
-
-in  let pTwo = λ(i : Natural) → i + 2
-
-in  let pThree = λ(i : Natural) → i + 3
-
-in  let pFour = λ(i : Natural) → i + 4
-
-in  let pFive = λ(i : Natural) → i + 5
-
-in  let foo =
-            λ(e : Either)
-          → lower
+in    λ(e : Either)
+    → lower
+      Natural
+      ( map
+        Natural
+        Natural
+        (λ(i : Natural) → i + 5)
+        ( map
+          Natural
+          Natural
+          (λ(i : Natural) → i + 4)
+          ( map
             Natural
+            Natural
+            (λ(i : Natural) → i + 3)
             ( map
               Natural
               Natural
-              pFive
-              ( map
-                Natural
-                Natural
-                pFour
-                ( map
-                  Natural
-                  Natural
-                  pThree
-                  ( map
-                    Natural
-                    Natural
-                    pTwo
-                    (map Natural Natural pOne (lift Natural e))
-                  )
-                )
-              )
+              (λ(i : Natural) → i + 2)
+              (map Natural Natural (λ(i : Natural) → i + 1) (lift Natural e))
             )
-
-in  foo
+          )
+        )
+      )
 ```
 
 And let's run it!
@@ -372,4 +367,10 @@ $ dhall <<< "./less-o-map"
 🙌 look at that reduction! Getting some hard numbers by outputting to a file again by doing
 `dhall <<< "./less-o-map" > output`, we can see that's it 221B! That's roughly 4 times smaller!
 The best part about this is that reduction stays constant no matter how many maps we introduce because
-we will always only need one merge! 🎉
+we will always only need one merge! 🎉 Remember that 330MB I mentioned before? It was reduced to 35MB
+which is roughly 10 times smaller!
+
+One open question that I have not resolved is do we definitely _need_ a `Functor` implementation to `lift`?
+I said that we can use `Yoneda` with _any_ `Type → Type`, but we still need it to be a
+`Functor` in the end. This could be useful for things like `Set` that do not fit into the `Functor` definition
+due to it reliance on `Ord`. But at least we get some sweet normalisation fusion, and that makes me a happy programmer!
