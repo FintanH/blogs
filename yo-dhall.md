@@ -42,7 +42,7 @@ $ dhall <<< "./Functor/Type"
 With that I invite you to try implement `Functor` for `Either` under
 a file called `Either/functor`. If you get stuck the solution is below.
 Some things to note are that you will need to import the `Either` type that
-was defined in the last post (or write it inline), and the `Functor/Type` we
+was defined in the last post (or write it in-line), and the `Functor/Type` we
 have just defined to add a type annotation so that we make sure we aren't lying
 about the implementation.
 
@@ -121,7 +121,7 @@ in    λ(e : Either)
 
 ```
 
-Not the prettiest code ever but it will be demostrative of the point so let's
+Not the prettiest code ever but it will be demonstrative of the point so let's
 run this through Dhall:
 
 ```
@@ -280,12 +280,12 @@ in the `Yoneda` tool box to help us: `lift` and `lower`.
 
 To summarise, we need:
 1. Our `f` that we're lifting
-2. Its `Functor` impementation
+2. Its `Functor` implementation
 3. The `a` `Type` that we're working on in the `f`
 4. The `f a` value
 5. And the body of the `Yoneda` from `λ(b : Type)` onwards, i.e. `Yoneda f a`.
 
-Converseley, `lower` _lowers_ the `Yoneda` to our `f`. Defined in Dhall as:
+Conversely, `lower` _lowers_ the `Yoneda` to our `f`. Defined in Dhall as:
 ```
   λ(f : Type → Type)
 → λ(a : Type)
