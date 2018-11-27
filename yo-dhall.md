@@ -182,8 +182,12 @@ We had an output of 300MB, which was slowing down the Haskell code that was tryi
 
 Enter `Yoneda`! I first heard about this through my good friend
 [reasonablypolymorphic](http://reasonablypolymorphic.com/). Sandy was talking about `Yoneda` and how it can help
-Haskell generics code for more efficient implementations. Its use doesn't stop there though,
-but first let's take a look at what it is.
+Haskell generics code for more efficient implementations. On top of this, I recently saw a [post](https://gist.github.com/Icelandjack/02069708bc75f4284ac625cd0e2ec81f)
+by [Icelandjack](https://gist.github.com/Icelandjack) laying out a wonderful derivation on `Yoneda` giving
+a good intuition of the underlying theory.
+
+In this post we will see how it becomes useful in Dhall code, and we will start by seeing
+how we define it in Dhall.
 
 We can define `Yoneda` in Dhall like so:
 ```
