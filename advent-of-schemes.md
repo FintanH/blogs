@@ -62,7 +62,7 @@ Without further ado, lets see how we can solve Day 1 of AOC with recursion schem
 
 ## Imported
 
-```
+```haskell
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase       #-}
 {-# LANGUAGE TypeApplications #-}
@@ -306,9 +306,9 @@ we should keep a tallying sum and as soon as we see the first repeat
 we should return that result.
 
 An example given on the site is:
-Input: -6, +3, +8, +5, -6
-Output: 5
-Progress: 0, -6, -3, 5, 10, 4, -2, 1, 9, 14, 8, 2, 5
+Input: `-6, +3, +8, +5, -6`
+Output: `5`
+Progress: `0, -6, -3, 5, 10, 4, -2, 1, 9, 14, 8, 2, 5`
 
 Since we don't necessarily know how long this algorithm can go on
 for we describe it as `Coalgebra` and provide it a seed. So lets
