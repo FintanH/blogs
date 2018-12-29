@@ -183,7 +183,7 @@ This captures everything we need for part 1, but we will demonstrate
 the computation later. Before that we will discuss our other functions
 for solving part 2.
 
-## Streaming
+## Again, and Again, and Again, and ...
 
 To build up our solution for part 2 we need to solve the issue of repeating elements.
 When we consider repeating elements we must think about how we need _at least_ one
@@ -252,7 +252,7 @@ In the case where we have `Indeed` we unpack the head and pass on our tail.
 
 We always keep the original to refer to it once we get to the end of the list.
 
-## Guaranteeing Non-Emptiness
+## JTO (Just the One)
 
 Since our input will be a list of numbers we want to write a function that
 will give us a `NonEmptyList` from a `List`.
@@ -408,7 +408,7 @@ passed back as a `Left` value. Or we may just keep computing forever with a `Rig
 
 In our case this is very true given our previous problem case of having a single input of `+1`.
 
-# Why do we fall Bruce?
+## Why do we fall, Bruce?
 
 While trying to figure out how to solve part 2 I wrote the following function.
 It has a couple of problems and it's left as an exercise to the reader to see what they are.
@@ -425,7 +425,7 @@ repeatAlgebra = \case
   Neither -> pure (Right 0)
 ```
 
-## Folding it all together
+## Folding it All Together
 
 Our answer to part 1 is implemented in `frequency`. We parse our list of numbers and
 use the combination of `cata` and our `sum'` algebra to find the answer. We simply
