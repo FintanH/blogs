@@ -236,7 +236,7 @@ expresses that we have a finite computation. We can do the same for `NonEmptyLis
 embedding `AndMaybe a` into `Mu`.
 
 At this point we can unpack what our type signature means:
-``haskell
+```haskell
       Coalgebra ((,) a) (NonEmptyList a, NonEmptyList a)
   === (NonEmptyList a, NonEmptyList a) -> (a, (NonEmptyList a, NonEmptyList a))
 ```
