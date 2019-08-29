@@ -1,8 +1,13 @@
 # Me
 
-1. reason is using types to solve problems. They're a powerful idea that can be reasoned about with some simple math (Algebra!). You can translate a problem spec to your types and then work in that specific domain. And then they're all checked so you don't fuck anything up.
-2. We use programs to automate a lot of tasks for us. That's sort of what they're invented for. So it's a reasonable choice to have a computer automate checking our programs for us so that we don't make mistakes. And GHC is one of the best programs around that does that for us.
-3. Because of the above two, refactoring is a fucking breeze. You make a change and then you can see all the parts of the system that get affected by that change. When I wrote Python I had to keep a mental model of all the parts that I was affecting by making a change somewhere else. Which also falls into reasoning about what you're writing.
+1. reason is using types to solve problems. They're a powerful idea that can be reasoned about 
+with some simple math (Algebra!).
+You can translate a problem spec to your types and then work in that specific domain. And then they're all checked so you don't fuck anything up.
+2. We use programs to automate a lot of tasks for us. That's sort of what they're invented for. 
+So it's a reasonable choice to have a computer automate checking our programs for us so that we don't 
+make mistakes. And GHC is one of the best programs around that does that for us.
+3. Because of the above two, refactoring is a fucking breeze. You make a change and then you can see all the parts of the system that get affected by that change. 
+When I wrote Python I had to keep a mental model of all the parts that I was affecting by making a change somewhere else. Which also falls into reasoning about what you're writing.
 
 Haskell ecosystem: https://github.com/Gabriel439/post-rfc/blob/master/sotu.md
 

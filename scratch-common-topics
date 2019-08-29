@@ -1,0 +1,53 @@
+
+Types
+- Safety
+- QA
+- Domain description
+- Mathematical
+- Concise
+- Building blocks
+- Maintainability
+- Message bus to colleagues (talking in the language of types)
+- Separation of concerns
+- Reasoning about code. Zoom in and out
+
+Abstraction
+- Constraints liberate
+- Expressitivity
+- Reuse of code
+- Reuse of concepts
+- A well of knowledge to learn from
+- Material generalises outside of Haskell
+- Maintainability
+- Composability
+- Generic programming
+
+Performance
+- Developers can work fast
+  - Less debugging, more thinking about solving a problem
+- The compiler optimises for little speed loss
+- Concurrency made easy
+- Laziness is useful (minor cases where it needs fine-tuning)
+
+Compiler
+- Machine checked
+- Refactoring
+- Optimisations
+- Acts as testing
+- Maintainability
+
+Testing
+- Property based tests (inspired other language e.g. Scalacheck, hypothesis)
+- Unit tests for E2E, business logic
+- Maintainability
+
+Needs for Improvement
+- No IDE (well there are some but are flaky)
+- Not best in class for all uses (yet)
+  - Data Science
+  - Numerical computing
+  - GUI programming
+  - Systems programming (use Rust!)
+  - Mobile programming
+- Learning materials are being rolled out slowly
+- Beginners can get lost in choices of tooling
